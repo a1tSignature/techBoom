@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: a1tSign
+      changes:
+        - addColumn:
+            tableName: branch
+            columns:
+                - column:
+                    name: identifier
+                    type: varchar(50)

@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: a1tSign
+      changes:
+        - createTable:
+            tableName: branch
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: x_coordinate
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: y_coordinate
+                  type: DOUBLE
+                  constraints:
+                    nullable: false

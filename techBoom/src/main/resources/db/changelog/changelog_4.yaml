@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: a1tSign
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: budget
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: x_user_coordinate
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: y_user_coordinate
+                  type: DOUBLE
+                  constraints:
+                    nullable: false

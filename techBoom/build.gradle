@@ -1,0 +1,39 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.0'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+}
+
+ext {
+	lombokVer = "1.18.2"
+	mapstructVer = "1.4.1.Final"
+}
+
+
+group = 'com.a1tSign'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.liquibase:liquibase-core'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	compileOnly "org.projectlombok:lombok:$lombokVer"
+	annotationProcessor "org.projectlombok:lombok:$lombokVer"
+
+	compile "org.mapstruct:mapstruct:$mapstructVer"
+	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVer"
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVer"
+
+}
+
+test {
+	useJUnitPlatform()
+}
