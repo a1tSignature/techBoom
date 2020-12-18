@@ -1,6 +1,8 @@
-package com.a1tSign.techBoom.data.dto;
+package com.a1tSign.techBoom.data.dto.user;
 
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,4 +16,6 @@ public class UserDTO {
     private double budget;
     private double xUserCoordinate;
     private double yUserCoordinate;
+
+    private List<String> roles;
 }

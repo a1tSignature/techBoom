@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: attempt_to_fix_unmapped_items_collection_in_Cart
+      author: a1tSign
+      changes:
+        - renameColumn:
+            newColumnName: id_cart
+            oldColumnName: id
+            tableName: cart

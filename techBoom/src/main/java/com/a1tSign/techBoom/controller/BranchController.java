@@ -4,6 +4,7 @@ import com.a1tSign.techBoom.data.dto.branch.BranchDTO;
 import com.a1tSign.techBoom.data.dto.branch.NewBranchDTO;
 import com.a1tSign.techBoom.service.branch.BranchService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,6 @@ public class BranchController {
 
     @GetMapping ("/{id}")
     NewBranchDTO getOne(@PathVariable ("id") long id) {
-
         return null;
     }
 

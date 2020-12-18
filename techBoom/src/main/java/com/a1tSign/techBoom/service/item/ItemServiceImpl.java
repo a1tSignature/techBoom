@@ -2,14 +2,13 @@ package com.a1tSign.techBoom.service.item;
 
 import com.a1tSign.techBoom.data.dto.item.ItemDTO;
 import com.a1tSign.techBoom.data.dto.item.ItemIdDTO;
+import com.a1tSign.techBoom.data.entity.Cart;
 import com.a1tSign.techBoom.data.entity.Category;
 import com.a1tSign.techBoom.data.entity.GoodsAmount;
 import com.a1tSign.techBoom.data.entity.Item;
 import com.a1tSign.techBoom.data.mapper.ItemMapper;
-import com.a1tSign.techBoom.data.repository.CategoryRepository;
-import com.a1tSign.techBoom.data.repository.GoodsAmountRepository;
-import com.a1tSign.techBoom.data.repository.ItemRepository;
-import com.a1tSign.techBoom.data.repository.StoreHouseRepository;
+import com.a1tSign.techBoom.data.repository.*;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,22 +25,27 @@ public class ItemServiceImpl implements ItemService {
     private final CategoryRepository categoryRepository;
     private final StoreHouseRepository storeHouseRepository;
     private final GoodsAmountRepository goodsAmountRepository;
+    private final CartRepository cartRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository, ItemMapper itemMapper,
                            CategoryRepository categoryRepository,
                            StoreHouseRepository storeHouseRepository,
-                           GoodsAmountRepository goodsAmountRepository) {
+                           GoodsAmountRepository goodsAmountRepository,
+                           CartRepository cartRepository) {
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
         this.categoryRepository = categoryRepository;
         this.storeHouseRepository = storeHouseRepository;
         this.goodsAmountRepository = goodsAmountRepository;
+        this.cartRepository = cartRepository;
     }
 
     @Override
+    //may produces null, catch
     public ItemDTO findOne(long id) {
         var itemEntity = itemRepository.findById(id);
-        return itemMapper.toItemDTO(itemEntity.get(), categoryUnExtractor(itemEntity.get()));
+        return itemEntity.map(item -> itemMapper.toItemDTO(item,
+                categoryUnExtractor(item))).orElse(null);
     }
 
     @Override
@@ -108,6 +112,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
+    public Page<ItemDTO> findItemsByUserId(long userId) {
+        var cart = cartRepository.findByUser(userId);
+        List<ItemDTO> items = cart.getItems().stream()
+                .map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
+                .collect(Collectors.toList());
+
+        //TODO: there is not a pagination, do real one
+        return (Page) items;
+    }
+
+    @Override
+    //may produces null, catch
     public List<ItemDTO> findAllItemsInBranch(long branchId) {
         var store = storeHouseRepository.findByBranch_Id(branchId);
         List<GoodsAmount> goods = goodsAmountRepository.findByStore(store);
@@ -125,8 +142,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    //may produces null, catch
     public Item findOneEntity(long id) {
-        return itemRepository.findById(id).get();
+        return itemRepository.findById(id).orElse(null);
     }
 
     private List<Category> categoryExtractor(ItemDTO itemDTO) {

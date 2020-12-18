@@ -4,6 +4,7 @@ import com.a1tSign.techBoom.data.dto.item.ItemDTO;
 import com.a1tSign.techBoom.data.dto.item.ItemIdDTO;
 import com.a1tSign.techBoom.service.item.ItemService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
