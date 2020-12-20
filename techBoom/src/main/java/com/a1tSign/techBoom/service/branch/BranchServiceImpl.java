@@ -8,6 +8,11 @@ import com.a1tSign.techBoom.data.repository.BranchRepository;
 import com.a1tSign.techBoom.data.repository.GoodsAmountRepository;
 import com.a1tSign.techBoom.data.repository.ItemRepository;
 import com.a1tSign.techBoom.data.repository.StoreHouseRepository;
+import com.a1tSign.techBoom.filters.Comparison;
+import com.a1tSign.techBoom.filters.SearchCriteria;
+import com.a1tSign.techBoom.filters.specification.BranchSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +41,15 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public BranchDTO updateBranch(long id, BranchDTO branchDTO) {
-        Branch branch = branchRepository.findById(id).get();
-        branch.setIdentifier(branchDTO.getIdentifier());
-        branch.setXCoordinate(branchDTO.getXCoordinate());
-        branch.setYCoordinate(branchDTO.getYCoordinate());
+    public void updateBranch(long id, BranchDTO branchDTO) {
+        var branch = branchRepository.findById(id);
+        if(branch.isPresent()) {
+            branch.get().setIdentifier(branchDTO.getIdentifier());
+            branch.get().setXCoordinate(branchDTO.getXCoordinate());
+            branch.get().setYCoordinate(branchDTO.getYCoordinate());
 
-        branchRepository.save(branch);
-
-        return branchDTO;
+            branchRepository.save(branch.get());
+        }
     }
 
     @Override
@@ -94,16 +99,20 @@ public class BranchServiceImpl implements BranchService {
         return branchRepository.findByIdentifier(identifier);
     }
 
-    //    @Override
-//    public void offerForSale(long branchId, long itemId, int count) {
-//        StoreHouse store = storeHouseRepository.findByBranch_Id(branchId);
-//        Item item = itemRepository.findById(itemId).get();
-//
-//        GoodsAmount goodsAmount = new GoodsAmount();
-//        goodsAmount.setCount(count);
-//        goodsAmount.setStore(store);
-//        goodsAmount.setItem(item);
-//
-//        goodsAmountRepository.save(goodsAmount);
-//    }
+    @Override
+    public Page<Branch> findAllInRangeOfUserCoordinates(double minX, double maxX,
+                                                        double minY, double maxY, Pageable pageable) {
+        BranchSpecification bsInRangeOfCoordinates = new BranchSpecification(new ArrayList<>());
+        bsInRangeOfCoordinates.addCriteria(new SearchCriteria("xCoordinate",
+                minX, Comparison.GREATER_THAN_EQUAL));
+        bsInRangeOfCoordinates.addCriteria(new SearchCriteria("xCoordinate",
+                maxX, Comparison.LESS_THAN_EQUAL));
+        bsInRangeOfCoordinates.addCriteria(new SearchCriteria("yCoordinate",
+                minY, Comparison.GREATER_THAN_EQUAL));
+        bsInRangeOfCoordinates.addCriteria(new SearchCriteria("yCoordinate",
+                maxY, Comparison.LESS_THAN_EQUAL));
+
+        return branchRepository.findAll(bsInRangeOfCoordinates, pageable);
+    }
+
 }

@@ -13,6 +13,6 @@ import java.time.LocalDateTime;
 public interface StatisticRepository extends PagingAndSortingRepository<Statistic, Long>,
         JpaSpecificationExecutor<Statistic> {
 
-//    @Query ("SELECT SUM(Statistic.cost) FROM Statistic s WHERE s.date >= :date")
-//    BigDecimal sumSalary(LocalDateTime date);
+    @Query ("SELECT SUM(s.cost) FROM Statistic s WHERE s.date >= :date")
+    double sumSalary(LocalDateTime date);
 }

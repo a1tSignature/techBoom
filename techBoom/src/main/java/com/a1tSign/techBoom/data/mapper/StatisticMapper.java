@@ -29,14 +29,14 @@ public interface StatisticMapper {
                                 UserStatisticDTO user);
 
     @Mappings({
-            @Mapping(target = "amount", source = "amount"),
+            @Mapping(target = "id", ignore = true),
             @Mapping(target = "branch", source = "branch"),
-            @Mapping(target = "fullCost", source = "fullCost"),
+            @Mapping(target = "cost", source = "fullCost"),
             @Mapping(target = "date", source = "dateTime"),
             @Mapping(target = "item", source = "item"),
             @Mapping(target = "user", source = "user"),
             @Mapping(target = "amount", source = "amount")
     })
-    Statistic newStatistic(int amount, Branch branch, double fullCost,
+    Statistic newStatistic(Integer amount, Branch branch, Double fullCost,
                            LocalDateTime dateTime, Item item, User user);
 }

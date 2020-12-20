@@ -8,8 +8,14 @@ import com.a1tSign.techBoom.data.entity.GoodsAmount;
 import com.a1tSign.techBoom.data.entity.Item;
 import com.a1tSign.techBoom.data.mapper.ItemMapper;
 import com.a1tSign.techBoom.data.repository.*;
+import com.a1tSign.techBoom.filters.Comparison;
+import com.a1tSign.techBoom.filters.SearchCriteria;
+import com.a1tSign.techBoom.filters.specification.ItemSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +63,15 @@ public class ItemServiceImpl implements ItemService {
         return items.stream().map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public List<ItemDTO> findAllItemsInBranch(Long id) {
+        List<ItemDTO> dtos = new ArrayList<>();
+        itemRepository.findAll().iterator()
+                .forEachRemaining((e) -> dtos.add(itemMapper.toItemDTO(e, categoryUnExtractor(e))));
+
+        return dtos;
     }
 
     @Override
@@ -113,40 +128,64 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
-    public Page<ItemDTO> findItemsByUserId(long userId) {
-        var user = userRepository.findById(userId);
-        var cart = cartRepository.findByUser(user.orElse(null));
-        List<ItemDTO> items = cart.getItems().stream()
-                .map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
-                .collect(Collectors.toList());
+    public Page<ItemDTO> findByUserAndInRangeOfCosts(String username, double minValue,
+                                                     double maxValue, Pageable pageable) {
+        var user = userRepository.findByUsername(username);
 
-        //TODO: there is not a pagination, do real one
-        return (Page) items;
+        ItemSpecification itSpecUser = new ItemSpecification(new ArrayList<>());
+        itSpecUser.addCriteria(new SearchCriteria("user",
+                user.orElse(null), Comparison.EQUAL_OBJECT));
+
+        ItemSpecification itSpecInRange = new ItemSpecification(new ArrayList<>());
+        itSpecInRange.addCriteria(new SearchCriteria("cost",
+                minValue, Comparison.GREATER_THAN_EQUAL));
+        itSpecInRange.addCriteria(new SearchCriteria("cost",
+                maxValue, Comparison.LESS_THAN_EQUAL));
+
+        return itemRepository.findAll(Specification.where(itSpecUser).and(itSpecInRange), pageable)
+                .map((e) -> itemMapper.toItemDTO(e, categoryUnExtractor(e)));
     }
 
     @Override
-    //may produces null, catch
-    public List<ItemDTO> findAllItemsInBranch(long branchId) {
+    public Page<ItemDTO> findAllItemsInBranch(long branchId, Pageable pageable) {
         var store = storeHouseRepository.findByBranch_Id(branchId);
-        List<GoodsAmount> goods = goodsAmountRepository.findByStore(store);
+        List<GoodsAmount> goods = goodsAmountRepository.findByStore(store, pageable);
 
         List<ItemDTO> allItems = new ArrayList<>();
 
         for (GoodsAmount good : goods) {
             var item = itemRepository.findById(good.getItem().getId());
-            ItemDTO itemDTO = itemMapper
-                    .toItemDTO(item.get(), categoryUnExtractor(item.get()));
-            allItems.add(itemDTO);
+
+            if (item.isPresent()) {
+                ItemDTO itemDTO = itemMapper
+                        .toItemDTO(item.get(), categoryUnExtractor(item.get()));
+                allItems.add(itemDTO);
+            }
         }
 
-        return allItems;
+        return new PageImpl<>(allItems, pageable, allItems.size());
     }
 
     @Override
     //may produces null, catch
     public Item findOneEntity(long id) {
         return itemRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void transferItemToUserCart(String username, long itemId) {
+        var user = userRepository.findByUsername(username);
+        var item = itemRepository.findById(itemId);
+
+        if (user.isPresent() && item.isPresent()) {
+            var cart = cartRepository.findByUser(user.get());
+            List<Item> cartItems = cart.getItems();
+
+            if (!cartItems.contains(item.get())) cartItems.add(item.get());
+
+            cart.setItems(cartItems);
+        }
     }
 
     private List<Category> categoryExtractor(ItemDTO itemDTO) {
@@ -164,16 +203,4 @@ public class ItemServiceImpl implements ItemService {
         return item.getCategories().stream().map(Category::getName).collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional
-    public void transferItemToUserCart(String username, long itemId) {
-        var user = userRepository.findByUsername(username);
-        var item = itemRepository.findById(itemId);
-        var cart = cartRepository.findByUser(user.orElse(null));
-
-        List<Item> list = cart.getItems();
-        list.add(item.orElse(null));
-
-        cart.setItems(list);
-    }
 }

@@ -1,12 +1,17 @@
 package com.a1tSign.techBoom.service.user;
 
 import com.a1tSign.techBoom.data.dto.security.RegisterUserDTO;
+import com.a1tSign.techBoom.data.dto.user.UserDTO;
 import com.a1tSign.techBoom.data.entity.*;
 import com.a1tSign.techBoom.data.mapper.StatisticMapper;
 import com.a1tSign.techBoom.data.mapper.UserMapper;
 import com.a1tSign.techBoom.data.repository.*;
+import com.a1tSign.techBoom.filters.Comparison;
+import com.a1tSign.techBoom.filters.SearchCriteria;
+import com.a1tSign.techBoom.filters.specification.UserSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,37 +104,6 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private List<Role> roleExtractor(RegisterUserDTO userDTO) {
-        List<Role> roles = new ArrayList<>();
-
-        for (String str : userDTO.getRoles()) {
-            var role = roleRepository.findByName(str);
-            role.ifPresent(roles::add);
-        }
-
-        return roles;
-    }
-
-    private List<String> roleUnExtractor(User user) {
-        return user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public void addItemToCart(long itemId, String username) {
-        var user = userRepository.findByUsername(username);
-        var item = itemRepository.findById(itemId);
-
-        if(user.isPresent() && item.isPresent()) {
-            var cart = cartRepository.findByUser(user.get());
-            List<Item> cartItems = cart.getItems();
-
-            if(!cartItems.contains(item.get())) cartItems.add(item.get());
-
-            cart.setItems(cartItems);
-        }
-    }
-
     @Override
     @Transactional
     public void buyOne(long itemId, String username, int amount, long branchId) {
@@ -142,7 +116,7 @@ public class UserServiceImpl implements UserService {
         if (item.isPresent() && user.isPresent() && branch.isPresent()) {
             double budget = user.get().getBudget();
             double fullCost = item.get().getCost().doubleValue() * amount;
-            GoodsAmount goodsAmount = goodsAmountRepository.findByStoreAndAndItem(store, item.get());
+            GoodsAmount goodsAmount = goodsAmountRepository.findByStoreAndItem(store, item.get());
 
             if (goodsAmount.getCount() >= amount && fullCost <= budget) {
                 user.get().setBudget(budget - fullCost);
@@ -158,4 +132,34 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    @Override
+    public Page<UserDTO> findOnlyUsersWithGreaterBudget(double budget, Pageable pageable) {
+        var role = roleRepository.findByName("ROLE_USER");
+
+        UserSpecification usRole = new UserSpecification(new ArrayList<>());
+        usRole.addCriteria(new SearchCriteria("roles", role.orElse(null), Comparison.IN));
+
+        UserSpecification usBudget = new UserSpecification(new ArrayList<>());
+        usBudget.addCriteria(new SearchCriteria("budget", budget, Comparison.GREATER_THAN));
+
+        return userRepository.findAll(Specification.where(usRole).and(usBudget), pageable)
+                .map((e) -> userMapper.toUserDTO(e, roleUnExtractor(e)));
+    }
+
+    private List<Role> roleExtractor(RegisterUserDTO userDTO) {
+        List<Role> roles = new ArrayList<>();
+
+        for (String str : userDTO.getRoles()) {
+            var role = roleRepository.findByName(str);
+            role.ifPresent(roles::add);
+        }
+
+        return roles;
+    }
+
+    private List<String> roleUnExtractor(User user) {
+        return user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
+    }
+
 }

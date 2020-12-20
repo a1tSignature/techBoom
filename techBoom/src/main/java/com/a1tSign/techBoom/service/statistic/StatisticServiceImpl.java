@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 public class StatisticServiceImpl implements StatisticService {
@@ -67,7 +68,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfUser(String username, Pageable pageable) {
         var user = userRepository.findByUsername(username);
 
-        StatisticSpecification ssUsername = new StatisticSpecification();
+        StatisticSpecification ssUsername = new StatisticSpecification(new ArrayList<>());
         ssUsername.addCriteria(new SearchCriteria("user",
                 user.orElse(null), Comparison.EQUAL_OBJECT));
 
@@ -82,7 +83,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfUserForDays(String username, int days, Pageable pageable) {
         var user = userRepository.findByUsername(username);
 
-        StatisticSpecification ssUsername = new StatisticSpecification();
+        StatisticSpecification ssUsername = new StatisticSpecification(new ArrayList<>());
         ssUsername.addCriteria(new SearchCriteria("user",
                 user.orElse(null), Comparison.EQUAL_OBJECT));
 
@@ -99,7 +100,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfBranch(String identifier, Pageable pageable) {
         var branch = branchRepository.findByIdentifier(identifier);
 
-        StatisticSpecification ssIdentifier = new StatisticSpecification();
+        StatisticSpecification ssIdentifier = new StatisticSpecification(new ArrayList<>());
         ssIdentifier.addCriteria(new SearchCriteria("branch", branch, Comparison.EQUAL_OBJECT));
 
         return statisticRepository.findAll(ssIdentifier, pageable)
@@ -113,7 +114,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfBranchForDays(String identifier, int days, Pageable pageable) {
         var branch = branchRepository.findByIdentifier(identifier);
 
-        StatisticSpecification ssIdentifier = new StatisticSpecification();
+        StatisticSpecification ssIdentifier = new StatisticSpecification(new ArrayList<>());
         ssIdentifier.addCriteria(new SearchCriteria("branch", branch, Comparison.EQUAL_OBJECT));
 
         StatisticSpecification ssTime = ssTime(days);
@@ -129,7 +130,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfItem(String title, Pageable pageable) {
         var item = itemRepository.findByTitle(title);
 
-        StatisticSpecification ssItem = new StatisticSpecification();
+        StatisticSpecification ssItem = new StatisticSpecification(new ArrayList<>());
         ssItem.addCriteria(new SearchCriteria("item", item, Comparison.EQUAL_OBJECT));
 
         return statisticRepository.findAll(ssItem, pageable)
@@ -143,7 +144,7 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getStatisticOfItemForDays(String title, int days, Pageable pageable) {
         var item = itemRepository.findByTitle(title);
 
-        StatisticSpecification ssItem = new StatisticSpecification();
+        StatisticSpecification ssItem = new StatisticSpecification(new ArrayList<>());
         ssItem.addCriteria(new SearchCriteria("item", item, Comparison.EQUAL_OBJECT));
 
         StatisticSpecification ssTime = ssTime(days);
@@ -156,18 +157,20 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public BigDecimal getRevenueForDays(int days) {
+    public double getRevenueForDays(int days) {
         LocalDateTime timeLimit = LocalDateTime.now().minusDays(days);
 
-        //return statisticRepository.sumSalary(timeLimit);
-        return null;
+        return statisticRepository.sumSalary(timeLimit);
     }
 
-
+    @Override
+    public long countAllBranches() {
+        return branchRepository.count();
+    }
 
     private StatisticSpecification ssTime(int days) {
         LocalDateTime timeLimit = LocalDateTime.now().minusDays(days);
-        StatisticSpecification ssTime = new StatisticSpecification();
+        StatisticSpecification ssTime = new StatisticSpecification(new ArrayList<>());
         ssTime.addCriteria(new SearchCriteria("date", timeLimit, Comparison.GREATER_THAN_EQUAL));
         return ssTime;
     }

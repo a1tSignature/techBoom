@@ -5,8 +5,10 @@ import com.a1tSign.techBoom.data.dto.item.ItemDTO;
 import com.a1tSign.techBoom.data.dto.item.ItemIdDTO;
 import com.a1tSign.techBoom.data.entity.Item;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ItemService {
@@ -21,9 +23,11 @@ public interface ItemService {
     @Secured("ROLE_ADMIN")
     ItemDTO updateItem(long id, ItemDTO updItem);
     void testCreateCategory(String name);
-    List<ItemDTO> findAllItemsInBranch(long branchId);
+    Page<ItemDTO> findAllItemsInBranch(long branchId, Pageable pageable);
     @Secured("ROLE_ADMIN")
     void addItemInBranch(long branchId, ItemIdDTO itemIdDTO);
-    Page<ItemDTO> findItemsByUserId(long userId);
+    Page<ItemDTO> findByUserAndInRangeOfCosts(String username, double minValue, double maxValue, Pageable pageable);
     void transferItemToUserCart(String username, long itemId);
+
+    List<ItemDTO> findAllItemsInBranch(Long id);
 }

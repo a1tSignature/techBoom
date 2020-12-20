@@ -79,11 +79,12 @@ public class ItemController {
     }
 
     @PostMapping("/{id}/transfer")
+    @ResponseStatus(HttpStatus.CREATED)
     public void transferItemToUserCart(@PathVariable("id") long id, Authentication authentication) {
         var details = (CustomUserDetails) authentication.getPrincipal();
         var username = details.getUsername();
 
-
+        itemService.transferItemToUserCart(username, id);
     }
 
 

@@ -1,7 +1,6 @@
 package com.a1tSign.techBoom.controller;
 
 import com.a1tSign.techBoom.data.dto.statistic.StatisticDTO;
-import com.a1tSign.techBoom.data.entity.Statistic;
 import com.a1tSign.techBoom.service.statistic.StatisticService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,7 +75,14 @@ public class AdminStatisticController {
         return statisticService.getStatisticOfItemForDays(title, days, pageable);
     }
 
+    @GetMapping("/branches/count")
+    public long countAllBranches() {
+        return statisticService.countAllBranches();
+    }
+
     //repair method that returns revenue, it doesn't work
-//    @GetMapping(value = "revenue/days", params = "days")
-//    public
+    @GetMapping(value = "revenue/days", params = "days")
+    public double getRevenuePerRangeOfDays(@RequestParam int days) {
+        return statisticService.getRevenueForDays(days);
+    }
 }

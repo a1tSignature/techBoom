@@ -31,5 +31,13 @@ public interface UserMapper {
     })
     UserStatisticDTO toUserStatisticDTO(User user);
 
+    @Mappings({
+            @Mapping(target = "username", source = "user.username"),
+            @Mapping(target = "XUserCoordinate", source = "user.XUserCoordinate"),
+            @Mapping(target = "YUserCoordinate", source = "user.YUserCoordinate"),
+            @Mapping(target = "budget", source = "user.budget"),
+            @Mapping(target = "roles", source = "roles")
+    })
+    UserDTO toUserDTO(User user, List<String> roles);
 
 }

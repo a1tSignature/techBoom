@@ -16,5 +16,6 @@ public interface StatisticService {
     Page<StatisticDTO> getStatisticOfBranchForDays(String identifier, int days, Pageable pageable);
     Page<StatisticDTO> getStatisticOfItem(String title, Pageable pageable);
     Page<StatisticDTO> getStatisticOfItemForDays(String title, int days, Pageable pageable);
-    BigDecimal getRevenueForDays(int days);
+    double getRevenueForDays(int days);
+    long countAllBranches();
 }
