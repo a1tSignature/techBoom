@@ -15,6 +15,7 @@ public interface BranchService {
     BranchDTO createBranch(BranchDTO branchDTO);
     Iterable<BranchDTO> findAll();
     BranchDTO findOne(long branchId);
+    @Secured("ROLE_ADMIN")
     long countAllBranches();
     Branch findByIdentifier(String identifier);
     //void offerForSale(long branchId, long itemId, int count);

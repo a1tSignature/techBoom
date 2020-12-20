@@ -1,6 +1,7 @@
 package com.a1tSign.techBoom.data.mapper;
 
 import com.a1tSign.techBoom.data.dto.item.ItemDTO;
+import com.a1tSign.techBoom.data.dto.item.ItemStatisticDTO;
 import com.a1tSign.techBoom.data.entity.Category;
 import com.a1tSign.techBoom.data.entity.Item;
 import org.mapstruct.Mapper;
@@ -14,6 +15,7 @@ import java.util.List;
 public interface ItemMapper {
 
     @Mappings ({
+            @Mapping (target = "id", source = "item.id"),
             @Mapping (target = "title", source = "item.title"),
             @Mapping (target = "cost", source = "item.cost"),
             @Mapping (target = "categories", source = "categories")})
@@ -26,21 +28,9 @@ public interface ItemMapper {
     })
     Item toItemEntity(ItemDTO itemDTO, List<Category> categories);
 
-    default Item toItemEntity(ItemDTO itemDTO) {
-        Item item = new Item();
-        item.setTitle(itemDTO.getTitle());
-        item.setCost(itemDTO.getCost());
-
-        List<Category> categories = new ArrayList<>();
-        for (String str : itemDTO.getCategories()) {
-            Category category = new Category();
-            category.setName(str);
-
-            categories.add(category);
-        }
-
-        item.setCategories(categories);
-
-        return item;
-    }
+    @Mappings({
+            @Mapping (target = "title", source = "item.title"),
+            @Mapping (target = "cost", source = "item.cost")
+    })
+    ItemStatisticDTO toItemStatisticDTO(Item item);
 }

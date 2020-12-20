@@ -4,20 +4,23 @@ import com.a1tSign.techBoom.data.entity.Item;
 import com.a1tSign.techBoom.filters.SearchCriteria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class CustomSpecification<T> implements Specification<T> {
 
-    protected List<SearchCriteria> list;
+    protected List<SearchCriteria> list = new ArrayList<>();
 
     public void addCriteria(SearchCriteria criteria) {
         list.add(criteria);
@@ -74,6 +77,14 @@ public abstract class CustomSpecification<T> implements Specification<T> {
                     break;
                 case IS_NULL:
                     predicates.add(criteriaBuilder.isNull(root.get(criteria.getKey())));
+                    break;
+                case EQUAL_OBJECT:
+                    predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()),
+                            criteria.getValue()));
+                    break;
+                case NOT_EQUAL_OBJECT:
+                    predicates.add(criteriaBuilder.notEqual(root.get(criteria.getKey()),
+                            criteria.getValue()));
                     break;
             }
         }

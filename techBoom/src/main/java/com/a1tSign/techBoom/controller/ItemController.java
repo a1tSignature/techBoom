@@ -1,13 +1,23 @@
 package com.a1tSign.techBoom.controller;
 
+import com.a1tSign.techBoom.data.dto.branch.BranchDTO;
+import com.a1tSign.techBoom.data.dto.branch.NearestBranchDTO;
 import com.a1tSign.techBoom.data.dto.item.ItemDTO;
 import com.a1tSign.techBoom.data.dto.item.ItemIdDTO;
+import com.a1tSign.techBoom.data.entity.Branch;
+import com.a1tSign.techBoom.security.CustomUserDetails;
+import com.a1tSign.techBoom.service.branch.BranchService;
 import com.a1tSign.techBoom.service.item.ItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 @RestController
 @RequestMapping("/api/v1/items")
@@ -26,7 +36,7 @@ public class ItemController {
     }
 
     @GetMapping
-    Iterable<ItemDTO> getAll() {
+    Iterable<ItemDTO> getAll(Authentication authentication) {
         return itemService.findAll();
     }
 
@@ -66,6 +76,14 @@ public class ItemController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     void addItemInBranch(@PathVariable("branchId") long branchId, @RequestBody ItemIdDTO itemIdDTO) {
         itemService.addItemInBranch(branchId, itemIdDTO);
+    }
+
+    @PostMapping("/{id}/transfer")
+    public void transferItemToUserCart(@PathVariable("id") long id, Authentication authentication) {
+        var details = (CustomUserDetails) authentication.getPrincipal();
+        var username = details.getUsername();
+
+
     }
 
 

@@ -26,18 +26,19 @@ public class ItemServiceImpl implements ItemService {
     private final StoreHouseRepository storeHouseRepository;
     private final GoodsAmountRepository goodsAmountRepository;
     private final CartRepository cartRepository;
+    private final UserRepository userRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository, ItemMapper itemMapper,
-                           CategoryRepository categoryRepository,
-                           StoreHouseRepository storeHouseRepository,
-                           GoodsAmountRepository goodsAmountRepository,
-                           CartRepository cartRepository) {
+                           CategoryRepository categoryRepository, StoreHouseRepository storeHouseRepository,
+                           GoodsAmountRepository goodsAmountRepository, CartRepository cartRepository,
+                           UserRepository userRepository) {
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
         this.categoryRepository = categoryRepository;
         this.storeHouseRepository = storeHouseRepository;
         this.goodsAmountRepository = goodsAmountRepository;
         this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -114,7 +115,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Page<ItemDTO> findItemsByUserId(long userId) {
-        var cart = cartRepository.findByUser(userId);
+        var user = userRepository.findById(userId);
+        var cart = cartRepository.findByUser(user.orElse(null));
         List<ItemDTO> items = cart.getItems().stream()
                 .map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
                 .collect(Collectors.toList());
@@ -160,5 +162,18 @@ public class ItemServiceImpl implements ItemService {
 
     private List<String> categoryUnExtractor(Item item) {
         return item.getCategories().stream().map(Category::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void transferItemToUserCart(String username, long itemId) {
+        var user = userRepository.findByUsername(username);
+        var item = itemRepository.findById(itemId);
+        var cart = cartRepository.findByUser(user.orElse(null));
+
+        List<Item> list = cart.getItems();
+        list.add(item.orElse(null));
+
+        cart.setItems(list);
     }
 }

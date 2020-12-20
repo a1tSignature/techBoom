@@ -12,5 +12,7 @@ public enum Comparison {
     MATCH,
     MATCH_START,
     MATCH_END,
-    NOT_IN
+    NOT_IN,
+    EQUAL_OBJECT,
+    NOT_EQUAL_OBJECT
 }

@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface ItemService {
     ItemDTO findOne(long id);
+    @Secured("ROLE_ADMIN")
     Item findOneEntity(long id);
     Iterable<ItemDTO> findAll();
     @Secured ("ROLE_ADMIN")
@@ -24,4 +25,5 @@ public interface ItemService {
     @Secured("ROLE_ADMIN")
     void addItemInBranch(long branchId, ItemIdDTO itemIdDTO);
     Page<ItemDTO> findItemsByUserId(long userId);
+    void transferItemToUserCart(String username, long itemId);
 }

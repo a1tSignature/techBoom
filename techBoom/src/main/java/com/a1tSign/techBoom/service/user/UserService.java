@@ -11,4 +11,6 @@ public interface UserService {
     Page<User> findAll(Pageable pageable);
     void createNewUser(RegisterUserDTO registerUserDTO);
     User findByUsernameAndPassword(String username, String password);
+    void buyOne(long itemId, String username, int amount, long branchId);
+    void addItemToCart(long itemId, String username);
 }

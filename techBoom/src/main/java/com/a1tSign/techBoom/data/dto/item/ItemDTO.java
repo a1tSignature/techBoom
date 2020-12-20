@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class ItemDTO {
+    long id;
     String title;
     List<String> categories;
     BigDecimal cost;

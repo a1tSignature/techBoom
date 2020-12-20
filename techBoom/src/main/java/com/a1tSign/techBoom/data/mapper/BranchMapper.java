@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-//Исправляет ли компонент то, что спринг не видит маппер в бинах?
+//Исправляет ли компонент то, что спринг не видит маппер в бинах? Да, исправляет
 @Mapper(componentModel = "spring")
 public interface BranchMapper {
 
