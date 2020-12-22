@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -28,7 +27,6 @@ public class StatisticServiceImpl implements StatisticService {
     private final BranchRepository branchRepository;
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
     private final StatisticMapper statisticMapper;
 
     public StatisticServiceImpl(StatisticRepository statisticRepository, UserRepository userRepository,
@@ -40,7 +38,6 @@ public class StatisticServiceImpl implements StatisticService {
         this.branchRepository = branchRepository;
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
-        this.userMapper = userMapper;
         this.statisticMapper = statisticMapper;
     }
 
@@ -48,9 +45,9 @@ public class StatisticServiceImpl implements StatisticService {
     public Page<StatisticDTO> getFullStatistic(Pageable pageable) {
         return statisticRepository.findAll(pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -59,9 +56,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(ssTime, pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -74,9 +71,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(ssUsername, pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -91,9 +88,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(Specification.where(ssUsername).and(ssTime), pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -105,9 +102,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(ssIdentifier, pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -121,9 +118,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(Specification.where(ssIdentifier).and(ssTime), pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -135,9 +132,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(ssItem, pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override
@@ -151,9 +148,9 @@ public class StatisticServiceImpl implements StatisticService {
 
         return statisticRepository.findAll(Specification.where(ssItem).and(ssTime), pageable)
                 .map((e) -> statisticMapper.toStatisticDTO(e,
-                        e.getBranch(),
+                        e.getBranch().getId(),
                         itemMapper.toItemStatisticDTO(e.getItem()),
-                        userMapper.toUserStatisticDTO(e.getUser())));
+                        e.getUser().getId()));
     }
 
     @Override

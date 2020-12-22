@@ -20,6 +20,7 @@ import java.util.List;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
+//Фронтенд не успеваю, ускориться?
 @RestController
 @RequestMapping ("/api/v1/branches")
 @SuppressWarnings ("unused")
@@ -39,8 +40,8 @@ public class BranchController {
     }
 
     @GetMapping
-    List<BranchDTO> getAll() {
-        return null;
+    Iterable<BranchDTO> getAll() {
+        return branchService.findAll();
     }
 
     @PostMapping ("/create")

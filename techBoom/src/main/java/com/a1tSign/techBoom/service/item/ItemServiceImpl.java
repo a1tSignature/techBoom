@@ -56,13 +56,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Iterable<ItemDTO> findAll() {
+    public Page<ItemDTO> findAll(Pageable pageable) {
         List<Item> items = new ArrayList<>();
 
-        itemRepository.findAll(Sort.by("title")).forEach(items::add);
-        return items.stream().map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
+        itemRepository.findAll(pageable).forEach(items::add);
+        List<ItemDTO> ans =  items.stream().map((item -> itemMapper.toItemDTO(item, categoryUnExtractor(item))))
                 .collect(Collectors.toList());
-
+        return new PageImpl<>(ans, pageable, ans.size());
     }
 
     @Override

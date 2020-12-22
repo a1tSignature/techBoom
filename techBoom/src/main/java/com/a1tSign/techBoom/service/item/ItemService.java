@@ -15,13 +15,14 @@ public interface ItemService {
     ItemDTO findOne(long id);
     @Secured("ROLE_ADMIN")
     Item findOneEntity(long id);
-    Iterable<ItemDTO> findAll();
+    Page<ItemDTO> findAll(Pageable pageable);
     @Secured ("ROLE_ADMIN")
     ItemDTO createItem(ItemDTO itemDTO);
     @Secured("ROLE_ADMIN")
     boolean deleteItem(long id);
     @Secured("ROLE_ADMIN")
     ItemDTO updateItem(long id, ItemDTO updItem);
+    @Secured("ROLE_ADMIN")
     void testCreateCategory(String name);
     Page<ItemDTO> findAllItemsInBranch(long branchId, Pageable pageable);
     @Secured("ROLE_ADMIN")

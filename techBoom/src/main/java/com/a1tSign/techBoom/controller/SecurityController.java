@@ -1,9 +1,11 @@
 package com.a1tSign.techBoom.controller;
 
 import com.a1tSign.techBoom.data.dto.security.AuthResDTO;
+import com.a1tSign.techBoom.data.dto.security.LoginUserDTO;
 import com.a1tSign.techBoom.data.dto.security.RegisterUserDTO;
 import com.a1tSign.techBoom.security.JwtProvider;
 import com.a1tSign.techBoom.service.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -26,7 +28,8 @@ public class SecurityController {
     }
 
     @PostMapping ("/login")
-    public AuthResDTO login(@RequestBody RegisterUserDTO dto) {
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResDTO login(@RequestBody LoginUserDTO dto) {
         var user = userService.findByUsernameAndPassword(dto.getUsername(), dto.getPassword());
         if (user == null) {
             throw new RuntimeException("Invalid username or password.");

@@ -25,8 +25,8 @@ public interface StatisticMapper {
             @Mapping (target = "branch", source = "branch"),
             @Mapping (target = "item", source = "item"),
     })
-    StatisticDTO toStatisticDTO(Statistic statistic, Branch branch, ItemStatisticDTO item,
-                                UserStatisticDTO user);
+    StatisticDTO toStatisticDTO(Statistic statistic, Long branch, ItemStatisticDTO item,
+                                Long user);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
