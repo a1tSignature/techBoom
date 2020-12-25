@@ -37,6 +37,8 @@ public class AdminController {
             adminService.deleteRole(role);
     }
 
+    // CR:DB: В URL лучше не использовать camel case. Я бы заменил на to-admin
+    // Кроме того я бы использовал немножко другой эндпоинт: /role/:roleName/assign/:username
     @PostMapping(value = "user/toAdmin",
     params = "username")
     public void makeAdmin(@RequestParam String username) {
