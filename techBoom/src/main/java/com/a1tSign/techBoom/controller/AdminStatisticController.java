@@ -34,6 +34,8 @@ public class AdminStatisticController {
         return statisticService.getStatisticForDays(days, pageable);
     }
 
+    // CR:DB: Тип статистики (all, days) и предмет статистики (user, branch) можно сделать параметрами
+    // Это позволит не плодить лишние эндпоинты, а просто менять логику в зависимости от параметров
     @GetMapping (value = "/user", params = "username")
     public Page<StatisticDTO> getAllUserStatistic(@PageableDefault (sort = {"amount"},
             direction = Sort.Direction.ASC) Pageable pageable, @RequestParam String username) {

@@ -26,6 +26,8 @@ public abstract class CustomSpecification<T> implements Specification<T> {
         list.add(criteria);
     }
 
+    // CR:DB: Было бы здорово это порефакторить и использовать ООП.
+    // Когда case становится много?
     protected void addToPredicates(List<Predicate> predicates, CriteriaBuilder criteriaBuilder,
                                    Root<T> root) {
         for (SearchCriteria criteria : list) {
